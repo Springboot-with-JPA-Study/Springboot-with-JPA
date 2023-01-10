@@ -1,7 +1,7 @@
 # 도메인 분석 설계
 
 ## 💡 요구사항 분석
-<img src="https://github.com/2dongyeop/Springboot-with-JPA/blob/dongyeop_analyze-requirements/dongyeop/image/1.png" width = 500/>
+<img src="https://github.com/Springboot-with-JPA-Study/Springboot-with-JPA/blob/main/dongyeop/image/1.png" width = 500/>
 
 - 회원, 주문, 상품의 관계
     - 회원은 여러 주문을 할 수 있다.
