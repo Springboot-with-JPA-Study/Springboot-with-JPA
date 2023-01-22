@@ -40,12 +40,15 @@
         @Column(name = "order_id")
         private Long id;
 
-        @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "member_id") private Member member; //주문 회원
+        @ManyToOne(fetch = FetchType.LAZY) 
+        @JoinColumn(name = "member_id") 
+        private Member member; //주문 회원
 
         @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
         private List<OrderItem> orderItems = new ArrayList<>();
 
-        @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY) @JoinColumn(name = "delivery_id")  //주인
+        @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY) 
+        @JoinColumn(name = "delivery_id")  //주인
         private Delivery delivery; //배송정보
 
         private LocalDateTime orderDate; //주문시간 
@@ -188,36 +191,34 @@
 #### 주문 리포지토리 개발
 
 - 주문 리포지토리 코드
-```java
-import jakarta.persistence.EntityManager;
-import jpabook.jpashop.domain.Order;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+    ```java
+    import jakarta.persistence.EntityManager;
+    import jpabook.jpashop.domain.Order;
+    import lombok.RequiredArgsConstructor;
+    import org.springframework.stereotype.Repository;
 
-import java.util.List;
+    import java.util.List;
 
-@Repository
-@RequiredArgsConstructor
-public class OrderRepository {
+    @Repository
+    @RequiredArgsConstructor
+    public class OrderRepository {
 
-    private final EntityManager em;
+        private final EntityManager em;
 
-    public void save(Order order) {
-        em.persist(order);
+        public void save(Order order) {
+            em.persist(order);
+        }
+
+        public Order findOne(Long id) {
+            return em.find(Order.class, id);
+        }
+
+        /**
+        * 검색 기능 - 추후에 생성 예정
+        */
+        //public List<Order> findAll(OrderSerach orderSerach) {}
     }
-
-    public Order findOne(Long id) {
-        return em.find(Order.class, id);
-    }
-
-    /**
-     * 검색 기능 - 추후에 생성 예정
-     */
-//    public List<Order> findAll(OrderSerach orderSerach) {
-//
-//    }
-}
-```
+    ```
 
 <br/>
 
@@ -312,9 +313,9 @@ public class OrderRepository {
         /**
         * 주문 검색 : 추후에 완성 예정
         */
-    //    public List<Order> findOrders(OrderSearch orderSearch) {
-    //        return orderRepository.findAll(orderSearch);
-    //    }
+        //public List<Order> findOrders(OrderSearch orderSearch) {
+        //    return orderRepository.findAll(orderSearch);
+        //}
     }
     ```
 
@@ -325,6 +326,7 @@ public class OrderRepository {
 > 주문 서비스의 주문과 주문 취소 메서드를 보면 비즈니스 로직 대부분이 엔티티에 있다. 
 > 
 > 서비스 계층은 단순히 엔티티에 필요한 요청을 위임하는 역할을 한다. 
+>
 > 이처럼 엔티티가 비즈니스 로직을 가지고 객체 지향의 특성을 적극 활용하는 것을 [도메인 모델 패턴](http://martinfowler.com/eaaCatalog/domainModel.html)이라 한다. 
 >
 >반대로 엔티티에는 비즈니스 로직이 거의 없고 서비스 계층에서 대부분의 비즈니스 로직을 처리하는 것을 [트랜잭션 스크립트 패턴](http://martinfowler.com/eaaCatalog/transactionScript.html)이라 한다.
@@ -371,12 +373,9 @@ public class OrderRepository {
   @Transactional
   public class OrderServiceTest {
 
-      @Autowired
-      EntityManager em;
-      @Autowired
-      OrderService orderService;
-      @Autowired
-      OrderRepository orderRepository;
+      @Autowired EntityManager em;
+      @Autowired OrderService orderService;
+      @Autowired OrderRepository orderRepository;
 
       @Test
       public void 상품주문() throws Exception {
@@ -440,26 +439,26 @@ public class OrderRepository {
 ### 주문 취소 테스트
 
 - 주문 취소 테스트 코드 : 주문을 취소하면 그만큼 재고가 증가해야 한다.
-```java
-@Test
-public void 주문취소() {
-    //Given
-    Member member = createMember();
-    Item item = createBook("시골 JPA", 10000, 10); //이름, 가격, 재고
-    int orderCount = 2;
-    Long orderId = orderService.order(member.getId(), item.getId(),
-  orderCount);
+    ```java
+    @Test
+    public void 주문취소() {
+        //Given
+        Member member = createMember();
+        Item item = createBook("시골 JPA", 10000, 10); //이름, 가격, 재고
+        int orderCount = 2;
+        Long orderId = orderService.order(member.getId(), item.getId(), orderCount);
 
-    //When
-    orderService.cancelOrder(orderId);
-    
-    //Then
-    Order getOrder = orderRepository.findOne(orderId); assertEquals("주문 취소시 상태는 CANCEL 이다.",OrderStatus.CANCEL, getOrder.getStatus());
+        //When
+        orderService.cancelOrder(orderId);
+        
+        //Then
+        Order getOrder = orderRepository.findOne(orderId); 
+        assertEquals("주문 취소시 상태는 CANCEL 이다.", OrderStatus.CANCEL, getOrder.getStatus());
 
-    assertEquals("주문이 취소된 상품은 그만큼 재고가 증가해야 한다.", 10,
-    item.getStockQuantity());
-}
-```
+        assertEquals("주문이 취소된 상품은 그만큼 재고가 증가해야 한다.", 10,
+        item.getStockQuantity());
+    }
+    ```
 
 <br/>
 
@@ -503,7 +502,7 @@ public void 주문취소() {
       //주문 상태 검색
       if (orderSearch.getOrderStatus() != null) {
           if (isFirstCondition) {
-              jpql += "where";
+              jpql += " where";
               isFirstCondition = false;
           } else {
               jpql += " and";
@@ -542,38 +541,38 @@ public void 주문취소() {
 
 #### JPA Criteria로 처리
 - `findAllByCriteria()`
-```java
-/**
-* JPA Criteria : 권장 방법x
-* JPA가 제공하는 동적 쿼리를 작성할수 있는 방법
-*/
-public List<Order> findAllByCriteria(OrderSearch orderSearch) {
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<Order> cq = cb.createQuery(Order.class);
-    Root<Order> o = cq.from(Order.class);
-    Join<Order, Member> m = o.join("member", JoinType.INNER); //회원과 조인
-    List<Predicate> criteria = new ArrayList<>();
+    ```java
+    /**
+    * JPA Criteria : 권장 방법x
+    * JPA가 제공하는 동적 쿼리를 작성할수 있는 방법
+    */
+    public List<Order> findAllByCriteria(OrderSearch orderSearch) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Order> cq = cb.createQuery(Order.class);
+        Root<Order> o = cq.from(Order.class);
+        Join<Order, Member> m = o.join("member", JoinType.INNER); //회원과 조인
+        List<Predicate> criteria = new ArrayList<>();
 
-    //주문 상태 검색
-    if (orderSearch.getOrderStatus() != null) {
-        Predicate status = cb.equal(o.get("status"),
-        orderSearch.getOrderStatus());
-        criteria.add(status);
+        //주문 상태 검색
+        if (orderSearch.getOrderStatus() != null) {
+            Predicate status = cb.equal(o.get("status"),
+            orderSearch.getOrderStatus());
+            criteria.add(status);
+        }
+
+        //회원 이름 검색
+        if (StringUtils.hasText(orderSearch.getMemberName())) {
+            Predicate name =
+                cb.like(m.<String>get("name"), "%" +
+                    orderSearch.getMemberName() + "%");
+            criteria.add(name);
+        }
+
+        cq.where(cb.and(criteria.toArray(new Predicate[criteria.size()])));
+        TypedQuery<Order> query = em.createQuery(cq).setMaxResults(1000); //최대 1000건
+        return query.getResultList();
     }
-
-    //회원 이름 검색
-    if (StringUtils.hasText(orderSearch.getMemberName())) {
-        Predicate name =
-            cb.like(m.<String>get("name"), "%" +
-                orderSearch.getMemberName() + "%");
-        criteria.add(name);
-    }
-
-    cq.where(cb.and(criteria.toArray(new Predicate[criteria.size()])));
-    TypedQuery<Order> query = em.createQuery(cq).setMaxResults(1000); //최대 1000건
-    return query.getResultList();
-}
-```
+    ```
 
 <br/>
 
